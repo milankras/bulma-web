@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dagdoelen App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" rel="stylesheet">
+    <!-- <link href="style.css" rel="stylesheet"> -->
+</head>
+
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title app-title">Dagdoelen App</h1>
+
+            <div id="approved-goals" class="box">
+                <h2 class="subtitle has-text-success">Goedgekeurde Dagdoelen</h2>
+                <ul id="approved-goals-list">
+                </ul>
+            </div>
+
+            <div id="student-form" class="box">
+                <h2 class="subtitle">Stel jouw dagdoel in</h2>
+                <form id="goal-form">
+                    <div class="field">
+                        <label class="label">Dagdoel</label>
+                        <div class="control">
+                            <input id="goal" class="input" type="text" placeholder="Voer jouw dagdoel in">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Tijd</label>
+                        <div class="control">
+                            <input id="time" class="input" type="time" step="900" lang="nl-NL">
+                        </div>
+                    </div>
+                    <div class="control">
+                        <button type="button" class="button is-primary is-fullwidth" onclick="addGoal()">Voeg doel
+                            toe</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="coach-approval" class="box">
+                <h2 class="subtitle">Coachgoedkeuring</h2>
+                <p><strong>Student:</strong> Milan</p>
+                <p><strong>Coach:</strong> Ties</p>
+                <div id="goal-list">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const goals = [];
+
+        function addGoal() {
+            const goal = document.getElementById('goal').value;
+            const time = document.getElementById('time').value;
+
+            if (goal && time) {
+                const newGoal = { goal, time, approved: null };
+                goals.push(newGoal);
+                renderGoals();
+                document.getElementById('goal-form').reset();
+            } else {
+                alert('Vul alle velden in.');
+            }
+        }
+
+        function approveGoal(index, isApproved) {
+            goals[index].approved = isApproved;
+            if (isApproved) {
+                addToApprovedGoals(goals[index]);
+            }
+            renderGoals();
+        }
+
+        function renderGoals() {
+            const goalList = document.getElementById('goal-list');
+            goalList.innerHTML = '';
+            goals.forEach((g, index) => {
+                goalList.innerHTML += `
+          <div class="box goal-box">
+            <div class="content">
+              <p><strong>Doel:</strong> ${g.goal}</p>
+              <p><strong>Tijd:</strong> ${g.time}</p>
+              <p><strong>Status:</strong> ${g.approved === null ? 'Niet goedgekeurd' : g.approved ? 'Goedgekeurd' : 'Afgekeurd'}</p>
+            </div>
+            ${g.approved === null ? `
+            <div class="buttons">
+              <button class="button is-success" onclick="approveGoal(${index}, true)">Goedkeuren</button>
+              <button class="button is-danger" onclick="approveGoal(${index}, false)">Afkeuren</button>
+            </div>` : ''}
+          </div>`;
+            });
+        }
+
+        function addToApprovedGoals(goal) {
+            const approvedGoalsList = document.getElementById('approved-goals-list');
+            const listItem = document.createElement('li');
+            listItem.textContent = `${goal.goal} (${goal.time})`;
+            listItem.classList.add('approved-goal-item');
+            approvedGoalsList.appendChild(listItem);
+        }
+    </script>
+</body>
+
+</html>
